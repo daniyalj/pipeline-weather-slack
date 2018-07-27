@@ -28,20 +28,21 @@ objects:
           node() {
           stage 'build'
           try {
-          openshift.newBuild("https://github.com/daniyalj/simple-nodejs-weather-app", "--name=weather-app")
+          openshiftBuild(buildConfig: 'weather-app', showBuildLogs: 'true')
           } catch(err) {
-                slackSend (color: '#FFFF00', message: "Failed: Job")
+                slackSend (color: '#ff0000', message: "Failed: Build")
                 error "Program failed, please read logs..."
           }
+          slackSend (color: '##0019ff', message: "Success: Build")
           stage 'deploy'
           try {
           openshiftDeploy(deploymentConfig: 'weather-app')
           openshiftScale(deploymentConfig: 'weather-app',replicaCount: '2')
           } catch(err) {
-                slackSend (color: '#FFFF00', message: "Failed: Job")
+                slackSend (color: '#ff0000', message: "Failed: Deploy")
                 error "Program failed, please read logs..."
           }
-
+          slackSend (color: '##0019ff', message: "Success: Deploy")
           }
       type: JenkinsPipeline
     triggers:
